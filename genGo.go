@@ -92,6 +92,8 @@ func (gen *CodeGenerator) GenGo() error {
 		return err
 	}
 	f.Write(source)
+	// Uncomment to write result to output
+	// fmt.Println(string(source))
 	return err
 }
 
@@ -182,10 +184,10 @@ func (gen *CodeGenerator) GoComplexType(v *ComplexType) {
 	if _, ok := gen.StructAST[v.Name]; !ok {
 		content := " struct {\n"
 		fieldName := genGoFieldName(v.Name, true)
-		if fieldName != v.Name {
-			gen.ImportEncodingXML = true
-			content += fmt.Sprintf("\tXMLName\txml.Name\t`xml:\"%s\", json:\"%s\", bson:\"%s\"`\n", v.Name, v.Name, v.Name)
-		}
+		//if fieldName != v.Name {
+		gen.ImportEncodingXML = true
+		content += fmt.Sprintf("\tXMLName\txml.Name\t`xml:\"%s\", json:\"-\", bson:\"-\"`\n", v.Name)
+		//	}
 		for _, attrGroup := range v.AttributeGroup {
 			fieldType := getBasefromSimpleType(trimNSPrefix(attrGroup.Ref), gen.ProtoTree)
 			if fieldType == "time.Time" {
