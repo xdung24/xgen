@@ -93,7 +93,7 @@ func (gen *CodeGenerator) GenGo() error {
 	}
 	f.Write(source)
 	// Uncomment to write result to output
-	// fmt.Println(string(source))
+	//fmt.Println(string(source))
 	return err
 }
 
@@ -153,7 +153,7 @@ func (gen *CodeGenerator) GoSimpleType(v *SimpleType) {
 			fieldName := genGoFieldName(v.Name, true)
 			if fieldName != v.Name {
 				gen.ImportEncodingXML = true
-				content += fmt.Sprintf("\tXMLName\txml.Name\t`xml:\"%s\", json:\"%s\", bson:\"%s\"`\n", v.Name, v.Name, v.Name)
+				content += fmt.Sprintf("\tXMLName\t*xml.Name\t`json:\"%s\", bson:\"%s\", xml:\"%s\"`\n", v.Name, v.Name, v.Name)
 			}
 			for _, member := range toSortedPairs(v.MemberTypes) {
 				memberName := member.key
@@ -187,9 +187,9 @@ func (gen *CodeGenerator) GoComplexType(v *ComplexType) {
 		gen.ImportEncodingXML = true
 
 		if fieldName != v.Name {
-			content += fmt.Sprintf("\tXMLName\txml.Name\t`xml:\"%s\", json:\"-\", bson:\"-\"`\n", v.Name)
+			content += fmt.Sprintf("\tXMLName\t*xml.Name\t`json:\"-,omitempty\", bson:\"-,omitempty\", xml:\"%s\"`\n", v.Name)
 		} else {
-			content += "\tXMLName\txml.Name\t`xml:\"\", json:\"-\", bson:\"-\"`\n"
+			content += "\tXMLName\t*xml.Name\t`json:\"-,omitempty\", bson:\"-,omitempty\", xml:\"\"`\n"
 
 		}
 		for _, attrGroup := range v.AttributeGroup {
@@ -209,7 +209,7 @@ func (gen *CodeGenerator) GoComplexType(v *ComplexType) {
 			if fieldType == "time.Time" {
 				gen.ImportTime = true
 			}
-			content += fmt.Sprintf("\t%sAttr\t%s\t`xml:\"%s,attr%s\", json:\"%s\", bson:\"%s\"`\n", genGoFieldName(attribute.Name, false), fieldType, attribute.Name, "-", "-", optional)
+			content += fmt.Sprintf("\t%sAttr\t%s\t`json:\"%s\", bson:\"%s\", xml:\"%s,attr%s\"`\n", genGoFieldName(attribute.Name, false), fieldType, "-,omitempty", "-,omitempty", attribute.Name, optional)
 		}
 		for _, group := range v.Groups {
 			var plural string
