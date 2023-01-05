@@ -153,7 +153,7 @@ func (gen *CodeGenerator) GoSimpleType(v *SimpleType) {
 			fieldName := genGoFieldName(v.Name, true)
 			if fieldName != v.Name {
 				gen.ImportEncodingXML = true
-				content += fmt.Sprintf("\tXMLName\t*xml.Name\t`json:\"%s\", bson:\"%s\", xml:\"%s\"`\n", v.Name, v.Name, v.Name)
+				content += fmt.Sprintf("\tXMLName\t*xml.Name\t`xml:\"%s\", json:\"%s\", bson:\"%s\"`\n", v.Name, v.Name, v.Name)
 			}
 			for _, member := range toSortedPairs(v.MemberTypes) {
 				memberName := member.key
@@ -187,9 +187,9 @@ func (gen *CodeGenerator) GoComplexType(v *ComplexType) {
 		gen.ImportEncodingXML = true
 
 		if fieldName != v.Name {
-			content += fmt.Sprintf("\tXMLName\t*xml.Name\t`json:\"-,omitempty\", bson:\"-,omitempty\", xml:\"%s\"`\n", v.Name)
+			content += fmt.Sprintf("\tXMLName\t*xml.Name\t`xml:\"%s\", json:\"-,omitempty\", bson:\"-,omitempty\"`\n", v.Name)
 		} else {
-			content += "\tXMLName\t*xml.Name\t`json:\"-,omitempty\", bson:\"-,omitempty\", xml:\"\"`\n"
+			content += "\tXMLName\t*xml.Name\t`xml:\"\", json:\"-,omitempty\", bson:\"-,omitempty\"`\n"
 
 		}
 		for _, attrGroup := range v.AttributeGroup {
