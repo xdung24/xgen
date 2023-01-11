@@ -1,4 +1,4 @@
-// Copyright 2020 - 2021 The xgen Authors. All rights reserved. Use of this
+// Copyright 2020 - 2022 The xgen Authors. All rights reserved. Use of this
 // source code is governed by a BSD-style license that can be found in the
 // LICENSE file.
 //
@@ -12,6 +12,7 @@
 //        -o <path> Output file path or directory for the generated code
 //        -p        Specify the package name
 //        -l        Specify the language of generated code (Go/C/Java/Rust/TypeScript)
+//        -t        Specify the model type of generated code (Xml/Json/Bson/Gorm)
 //        -h        Output this help and exit
 //        -v        Output version and exit
 //
@@ -35,11 +36,12 @@ import (
 // Config holds user-defined overrides and filters that are used when
 // generating source code from an XSD document.
 type Config struct {
-	I       string
-	O       string
-	Pkg     string
-	Lang    string
-	Version string
+	I         string
+	O         string
+	Pkg       string
+	Lang      string
+	Version   string
+	ModelType string
 }
 
 // Cfg are the default config for xgen. The default package name and output
@@ -58,17 +60,26 @@ var SupportLang = map[string]bool{
 	"TypeScript": true,
 }
 
+// ModelType defines supported model types.
+var ModelType = map[string]bool{
+	"Xml":  true,
+	"Json": true,
+	"Bson": true,
+	"Gorm": true,
+}
+
 // parseFlags parse flags of program.
 func parseFlags() *Config {
 	iPtr := flag.String("i", "", "Input file path or directory for the XML schema definition")
 	oPtr := flag.String("o", "xgen_out", "Output file path or directory for the generated code")
 	pkgPtr := flag.String("p", "", "Specify the package name")
 	langPtr := flag.String("l", "", "Specify the language of generated code")
+	modelTypePtr := flag.String("t", "", "Specify the model type of generated code")
 	verPtr := flag.Bool("v", false, "Show version and exit")
 	helpPtr := flag.Bool("h", false, "Show this help and exit")
 	flag.Parse()
 	if *helpPtr {
-		fmt.Printf("xgen version: %s\r\nCopyright (c) 2020 - 2021 Ri Xu https://xuri.me All rights reserved.\r\n\r\nUsage:\r\n$ xgen [<flag> ...] <XSD file or directory> ...\n  -i <path>\tInput file path or directory for the XML schema definition\r\n  -o <path>\tOutput file path or directory for the generated code\r\n  -p     \tSpecify the package name\r\n  -l      \tSpecify the language of generated code (Go/C/Java/Rust/TypeScript)\r\n  -h     \tOutput this help and exit\r\n  -v     \tOutput version and exit\r\n", Cfg.Version)
+		fmt.Printf("xgen version: %s\r\nCopyright (c) 2020 - 2022 Ri Xu https://xuri.me All rights reserved.\r\n\r\nUsage:\r\n$ xgen [<flag> ...] <XSD file or directory> ...\n  -i <path>\tInput file path or directory for the XML schema definition\r\n  -o <path>\tOutput file path or directory for the generated code\r\n  -p     \tSpecify the package name\r\n  -l      \tSpecify the language of generated code (Go/C/Java/Rust/TypeScript)\r\n  -h     \tOutput this help and exit\r\n  -v     \tOutput version and exit\r\n", Cfg.Version)
 		os.Exit(0)
 	}
 	if *verPtr {
@@ -92,6 +103,11 @@ func parseFlags() *Config {
 		fmt.Println("unsupport language", Cfg.Lang)
 		os.Exit(1)
 	}
+	Cfg.ModelType = *modelTypePtr
+	if ok := ModelType[Cfg.ModelType]; !ok {
+		fmt.Println("unsupport model type", Cfg.ModelType)
+		os.Exit(1)
+	}
 	if *pkgPtr != "" {
 		Cfg.Pkg = *pkgPtr
 	}
@@ -112,6 +128,7 @@ func main() {
 			OutputDir:           cfg.O,
 			Lang:                cfg.Lang,
 			Package:             cfg.Pkg,
+			ModelType:           cfg.ModelType,
 			IncludeMap:          make(map[string]bool),
 			LocalNameNSMap:      make(map[string]string),
 			NSSchemaLocationMap: make(map[string]string),

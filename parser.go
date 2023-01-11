@@ -29,6 +29,7 @@ type Options struct {
 	Extract             bool
 	Lang                string
 	Package             string
+	ModelType           string
 	IncludeMap          map[string]bool
 	LocalNameNSMap      map[string]string
 	NSSchemaLocationMap map[string]string
@@ -142,6 +143,7 @@ func (opt *Options) Parse() (err error) {
 			File:      path,
 			ProtoTree: opt.ProtoTree,
 			StructAST: map[string]string{},
+			ModelType: opt.ModelType,
 		}
 		funcName := fmt.Sprintf("Gen%s", MakeFirstUpperCase(opt.Lang))
 		if err = callFuncByName(generator, funcName, []reflect.Value{}); err != nil {
