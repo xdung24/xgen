@@ -12,7 +12,7 @@
 //        -o <path> Output file path or directory for the generated code
 //        -p        Specify the package name
 //        -l        Specify the language of generated code (Go/C/Java/Rust/TypeScript)
-//        -t        Specify the model type of generated code (Xml/Json/Bson/Gorm)
+//        -t        Specify the model type of generated code (Xml/Json/Bson/Gorm/XmlJson)
 //        -h        Output this help and exit
 //        -v        Output version and exit
 //
@@ -62,10 +62,11 @@ var SupportLang = map[string]bool{
 
 // ModelType defines supported model types.
 var ModelType = map[string]bool{
-	"Xml":  true,
-	"Json": true,
-	"Bson": true,
-	"Gorm": true,
+	"Xml":     true,
+	"Json":    true,
+	"Bson":    true,
+	"Gorm":    true,
+	"XmlJson": true,
 }
 
 // parseFlags parse flags of program.

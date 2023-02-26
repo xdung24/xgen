@@ -59,10 +59,11 @@ var goBuildinType = map[string]bool{
 
 // ModelType enum
 const (
-	Xml  string = "Xml"
-	Json        = "Json"
-	Bson        = "Bson"
-	Gorm        = "Gorm"
+	Xml     string = "Xml"
+	Json           = "Json"
+	Bson           = "Bson"
+	Gorm           = "Gorm"
+	XmlJson        = "XmlJson"
 )
 
 const ns = "urn1:"
@@ -178,6 +179,8 @@ func (gen *CodeGenerator) GoSimpleType(v *SimpleType) {
 				// Do nothing
 			case Gorm:
 				// Do nothing
+			case XmlJson:
+				// Do nothing
 			}
 
 			for _, member := range toSortedPairs(v.MemberTypes) {
@@ -224,6 +227,8 @@ func (gen *CodeGenerator) GoComplexType(v *ComplexType) {
 		case Bson:
 			// Do nothing
 		case Gorm:
+			// Do nothing
+		case XmlJson:
 			// Do nothing
 		}
 
@@ -272,6 +277,8 @@ func (gen *CodeGenerator) GoComplexType(v *ComplexType) {
 				// Add code here
 			case Gorm:
 				// Add code here
+			case XmlJson:
+				content += fmt.Sprintf("\t%s\t%s%s\t`xml:\"%s\",json:\"%s\"`\n", genGoFieldName(element.Name, false), plural, fieldType, ns+element.Name, element.Name)
 			}
 		}
 		if len(v.Base) > 0 {
@@ -288,6 +295,8 @@ func (gen *CodeGenerator) GoComplexType(v *ComplexType) {
 					// Add code here
 				case Gorm:
 					// Add code here
+				case XmlJson:
+					content += fmt.Sprintf("\tValue\t%s\t`xml:\",chardata\",json:\"%s\"`\n", genGoFieldType(v.Base), genGoFieldType(v.Base))
 				}
 			} else {
 				content += fmt.Sprintf("\t%s\n", genGoFieldType(v.Base))
@@ -359,6 +368,8 @@ func (gen *CodeGenerator) GoAttributeGroup(v *AttributeGroup) {
 				// Add code here
 			case Gorm:
 				// Add code here
+			case XmlJson:
+				content += fmt.Sprintf("\t%sAttr\t%s\t`xml:\"%s,attr%s\",json:\"%s\"`\n", genGoFieldName(attribute.Name, false), genGoFieldType(getBasefromSimpleType(trimNSPrefix(attribute.Type), gen.ProtoTree)), ns+attribute.Name, optional, attribute.Name)
 			}
 		}
 		content += "}\n"
